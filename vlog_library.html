@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>私人小说馆</title>
+<style>
+:root{--bg:#f5f1eb;--paper:#fffdf9;--ink:#302b27;--muted:#8a8178;--accent:#8b6651;--line:#e8dfd5;--soft:#efe7de}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Serif SC","Songti SC",serif}
+button,input,textarea{font:inherit}button{cursor:pointer}
+header{padding:24px clamp(18px,5vw,64px);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);background:var(--paper)}
+.brand{font-size:22px;letter-spacing:3px}.brand small{display:block;font:11px sans-serif;color:var(--muted);letter-spacing:2px;margin-top:5px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:var(--paper);padding:9px 14px;border-radius:7px;color:var(--ink)}.btn.primary{background:var(--accent);color:white;border-color:var(--accent)}.btn.danger{color:#a34d42}
+main{max-width:1100px;margin:34px auto;padding:0 22px 70px}.crumb{font:13px sans-serif;color:var(--muted);margin-bottom:22px}.crumb button{border:0;background:none;color:var(--accent);padding:0}
+.hero{padding:34px 30px;background:linear-gradient(120deg,#e9ded2,#f7f1e9);border-radius:12px;margin-bottom:28px}.hero .eyebrow{font:11px sans-serif;letter-spacing:3px;color:var(--accent)}h1{font-size:30px;font-weight:500;margin:12px 0 8px}.hero p{color:#766b61;margin:0;line-height:1.8}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin:24px 0 14px}.section-head h2{font-size:19px;font-weight:500;margin:0}.muted{color:var(--muted);font:13px sans-serif}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.tile{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:19px;text-align:left;min-height:145px;transition:.15s}.tile:hover{transform:translateY(-2px);border-color:#c8b5a4}.tile .symbol{font-size:22px;color:var(--accent)}.tile h3{font-size:17px;font-weight:500;margin:13px 0 7px}.tile p{font:12px sans-serif;color:var(--muted);margin:0}.tile .tile-actions{display:flex;gap:8px;margin-top:15px}
+.empty{padding:45px 20px;text-align:center;background:var(--paper);border:1px dashed #d8cbbf;border-radius:10px;color:var(--muted);line-height:2}
+.list{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden}.list-row{display:flex;align-items:center;gap:14px;padding:17px 20px;border-bottom:1px solid var(--line)}.list-row:last-child{border-bottom:0}.list-row .num{font:12px sans-serif;color:#aa9b8d;width:28px}.list-row .row-main{flex:1;min-width:0}.list-row h3{font-size:16px;font-weight:500;margin:0 0 5px}.list-row p{font:12px sans-serif;color:var(--muted);margin:0}.row-actions{display:flex;gap:6px}
+.reader{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:clamp(24px,6vw,68px);max-width:820px;margin:auto}.reader h1{text-align:center;font-size:27px;margin:0 0 10px}.reader .meta{text-align:center;color:var(--muted);font:12px sans-serif;margin-bottom:38px}.reader .body{font-size:17px;line-height:2.25;white-space:pre-wrap;overflow-wrap:anywhere}.reader-nav{display:flex;justify-content:space-between;gap:10px;margin-top:35px}
+.modal-back{position:fixed;inset:0;background:#211a1680;display:none;align-items:center;justify-content:center;padding:18px;z-index:5}.modal-back.show{display:flex}.modal{background:var(--paper);width:min(560px,100%);padding:25px;border-radius:12px;max-height:90vh;overflow:auto}.modal h2{font-weight:500;margin:0 0 18px}.field{display:block;margin:13px 0}.field span{display:block;font:12px sans-serif;color:var(--muted);margin-bottom:7px}.field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:7px;padding:11px;background:white;color:var(--ink)}.field textarea{min-height:240px;resize:vertical;line-height:1.8}.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+footer{text-align:center;color:#a69b90;font:11px sans-serif;padding:25px}
+@media(max-width:600px){header{align-items:flex-start;gap:12px;flex-direction:column}.actions{width:100%}.hero{padding:25px 20px}.list-row{padding:14px 12px}.row-actions .btn{padding:7px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">私人小说馆<small>MY PRIVATE LIBRARY</small></div>
+  <div class="actions">
+    <button class="btn" id="exportBtn">导出备份</button>
+    <button class="btn" id="importBtn">导入备份</button>
+    <button class="btn primary" id="addNovelBtn">＋ 新建小说</button>
+    <input type="file" id="importFile" accept="application/json" hidden>
+  </div>
+</header>
+<main>
+  <div class="crumb" id="crumb"></div>
+  <section class="hero" id="hero">
+    <div class="eyebrow">A QUIET PLACE FOR STORIES</div>
+    <h1 id="heroTitle">把故事，收藏在自己的角落。</h1>
+    <p id="heroDesc">建立小说、篇章与章节，慢慢整理属于你的文字世界。</p>
+  </section>
+  <div class="section-head"><h2 id="sectionTitle">我的小说</h2><span class="muted" id="count"></span></div>
+  <div id="content"></div>
+</main>
+<footer>私人小说馆 · 内容保存在当前浏览器</footer>
+
+<div class="modal-back" id="modalBack">
+  <div class="modal">
+    <h2 id="modalTitle">新建小说</h2>
+    <form id="editForm">
+      <label class="field"><span>名称</span><input id="nameInput" maxlength="120" required placeholder="输入名称"></label>
+      <label class="field" id="descField"><span>简介（可选）</span><textarea id="descInput" style="min-height:90px" placeholder="写下一段简介..."></textarea></label>
+      <label class="field" id="bodyField"><span>章节正文</span><textarea id="bodyInput" placeholder="在这里写下你的故事..."></textarea></label>
+      <div class="modal-foot"><button type="button" class="btn" id="cancelBtn">取消</button><button class="btn primary" type="submit">保存</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+const KEY='private_novel_library_v1';
+const seed=[];
+let data=loadData(), level='home', novelId=null, volumeId=null, chapterId=null;
+let editing=null;
+function uid(){return 'id_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
+function loadData(){try{return JSON.parse(localStorage.getItem(KEY))||seed}catch(e){return seed}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function currentNovel(){return data.find(x=>x.id===novelId)}
+function currentVolume(){return currentNovel()?.volumes.find(x=>x.id===volumeId)}
+function el(id){return document.getElementById(id)}
+function setCrumb(){
+ let parts=[`<button onclick="goHome()">书架</button>`];
+ if(novelId)parts.push(`<button onclick="goNovel()">${esc(currentNovel()?.name||'小说')}</button>`);
+ if(volumeId)parts.push(`<button onclick="goVolume()">${esc(currentVolume()?.name||'篇章')}</button>`);
+ if(chapterId)parts.push('阅读');
+ el('crumb').innerHTML=parts.join('　/　');
+}
+function goHome(){level='home';novelId=volumeId=chapterId=null;render()}
+function goNovel(){level='novel';volumeId=chapterId=null;render()}
+function goVolume(){level='volume';chapterId=null;render()}
+function render(){
+ setCrumb();
+ const content=el('content');
+ if(level==='home'){
+  el('heroTitle').textContent='把故事，收藏在自己的角落。';el('heroDesc').textContent='建立小说、篇章与章节，慢慢整理属于你的文字世界。';
+  el('sectionTitle').textContent='我的小说';el('count').textContent=`${data.length} 部小说`;
+  content.innerHTML=data.length?`<div class="grid">${data.map(n=>`<div class="tile"><div class="symbol">▤</div><h3>${esc(n.name)}</h3><p>${esc(n.desc||'暂无简介')} · ${n.volumes.length} 个篇章</p><div class="tile-actions"><button class="btn primary" onclick="openNovel('${n.id}')">进入</button><button class="btn" onclick="editItem('novel','${n.id}')">编辑</button><button class="btn danger" onclick="deleteItem('novel','${n.id}')">删除</button></div></div>`).join('')}</div>`:`<div class="empty">这里还没有小说。<br>点击右上角「新建小说」，开始建立你的私人书架。</div>`;
+ }else if(level==='novel'){
+  const n=currentNovel();if(!n)return goHome();
+  el('heroTitle').textContent=n.name;el('heroDesc').textContent=n.desc||'这部小说还没有简介。';
+  el('sectionTitle').textContent='篇章';el('count').textContent=`${n.volumes.length} 个篇章`;
+  content.innerHTML=n.volumes.length?`<div class="list">${n.volumes.map((v,i)=>`<div class="list-row"><span class="num">${String(i+1).padStart(2,'0')}</span><div class="row-main"><h3>${esc(v.name)}</h3><p>${v.chapters.length} 个章节</p></div><button class="btn primary" onclick="openVolume('${v.id}')">查看章节</button><div class="row-actions"><button class="btn" onclick="editItem('volume','${v.id}')">编辑</button><button class="btn danger" onclick="deleteItem('volume','${v.id}')">删除</button></div></div>`).join('')}</div>`:`<div class="empty">这部小说还没有篇章。<br>点击「新增篇章」开始整理内容。</div>`;
+ }else if(level==='volume'){
+  const v=currentVolume();if(!v)return goHome();
+  el('heroTitle').textContent=v.name;el('heroDesc').textContent=`所属小说：${currentNovel().name}`;
+  el('sectionTitle').textContent='章节';el('count').textContent=`${v.chapters.length} 个章节`;
+  content.innerHTML=v.chapters.length?`<div class="list">${v.chapters.map((c,i)=>`<div class="list-row"><span class="num">${String(i+1).padStart(2,'0')}</span><div class="row-main"><h3>${esc(c.name)}</h3><p>${esc((c.body||'').slice(0,70).replace(/\n/g,' '))}${(c.body||'').length>70?'…':''}</p></div><button class="btn primary" onclick="readChapter('${c.id}')">阅读</button><div class="row-actions"><button class="btn" onclick="editItem('chapter','${c.id}')">编辑</button><button class="btn danger" onclick="deleteItem('chapter','${c.id}')">删除</button></div></div>`).join('')}</div>`:`<div class="empty">这个篇章还没有章节。<br>点击「新增章节」开始写作。</div>`;
+ }else{
+  const c=currentVolume()?.chapters.find(x=>x.id===chapterId);if(!c)return goHome();
+  el('heroTitle').textContent=currentNovel().name;el('heroDesc').textContent=currentVolume().name;
+  el('sectionTitle').textContent='正在阅读';el('count').textContent='';
+  const chapters=currentVolume().chapters,idx=chapters.findIndex(x=>x.id===chapterId);
+  content.innerHTML=`<article class="reader"><h1>${esc(c.name)}</h1><div class="meta">${esc(currentNovel().name)}　·　${esc(currentVolume().name)}</div><div class="body">${esc(c.body||'（本章暂无正文）')}</div><div class="reader-nav"><button class="btn" ${idx<=0?'disabled':''} onclick="readChapter('${chapters[idx-1]?.id||''}')">← 上一章</button><button class="btn" onclick="editItem('chapter','${c.id}')">编辑正文</button><button class="btn" ${idx>=chapters.length-1?'disabled':''} onclick="readChapter('${chapters[idx+1]?.id||''}')">下一章 →</button></div></article>`;
+ }
+ el('addNovelBtn').textContent=level==='home'?'＋ 新建小说':level==='novel'?'＋ 新增篇章':level==='volume'?'＋ 新增章节':'＋ 新建小说';
+}
+function openNovel(id){novelId=id;level='novel';render()}
+function openVolume(id){volumeId=id;level='volume';render()}
+function readChapter(id){chapterId=id;level='reader';render()}
+el('addNovelBtn').onclick=()=>openEditor(level==='home'?'novel':level==='novel'?'volume':level==='volume'?'chapter':'novel');
+function openEditor(type,itemId=null){
+ editing={type,itemId};const obj=itemId?findItem(type,itemId):null;
+ el('modalTitle').textContent=(itemId?'编辑':'新建')+({novel:'小说',volume:'篇章',chapter:'章节'}[type]);
+ el('nameInput').value=obj?.name||'';el('descInput').value=obj?.desc||'';el('bodyInput').value=obj?.body||'';
+ el('descField').style.display=type==='novel'?'block':'none';el('bodyField').style.display=type==='chapter'?'block':'none';
+ el('modalBack').classList.add('show');el('nameInput').focus();
+}
+function findItem(type,id){if(type==='novel')return data.find(x=>x.id===id);if(type==='volume')return currentNovel()?.volumes.find(x=>x.id===id);return currentVolume()?.chapters.find(x=>x.id===id)}
+window.editItem=openEditor;
+el('cancelBtn').onclick=()=>el('modalBack').classList.remove('show');
+el('modalBack').addEventListener('click',e=>{if(e.target===el('modalBack'))el('modalBack').classList.remove('show')});
+el('editForm').onsubmit=e=>{
+ e.preventDefault();const {type,itemId}=editing;const name=el('nameInput').value.trim();if(!name)return;
+ const values={id:itemId||uid(),name,desc:el('descInput').value.trim(),body:el('bodyInput').value};
+ if(type==='novel'){if(itemId)Object.assign(findItem(type,itemId),values);else data.push({...values,volumes:[]})}
+ if(type==='volume'){const n=currentNovel();if(itemId)Object.assign(findItem(type,itemId),values);else n.volumes.push({...values,chapters:[]})}
+ if(type==='chapter'){const v=currentVolume();if(itemId)Object.assign(findItem(type,itemId),values);else v.chapters.push(values)}
+ save();el('modalBack').classList.remove('show');render();
+};
+function deleteItem(type,id){
+ if(!confirm('确定删除这个项目及其下属内容吗？此操作无法撤销。'))return;
+ if(type==='novel')data=data.filter(x=>x.id!==id);
+ if(type==='volume')currentNovel().volumes=currentNovel().volumes.filter(x=>x.id!==id);
+ if(type==='chapter')currentVolume().chapters=currentVolume().chapters.filter(x=>x.id!==id);
+ save();render();
+}
+window.deleteItem=deleteItem;
+el('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='私人小说馆备份.json';a.click();URL.revokeObjectURL(a.href)};
+el('importBtn').onclick=()=>el('importFile').click();
+el('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const parsed=JSON.parse(await f.text());if(!Array.isArray(parsed))throw Error();if(confirm('导入会替换当前书架内容，建议先导出备份。确定继续吗？')){data=parsed;save();goHome()}}catch(err){alert('文件格式不正确，无法导入。')}e.target.value=''};
+render();
+</script>
+</body>
+</html>
