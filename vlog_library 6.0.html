@@ -1,0 +1,2131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>私人小说馆</title>
+
+<style>
+:root {
+    --bg:#f5f1eb;
+    --paper:#fffdf9;
+    --ink:#302b27;
+    --muted:#8a8178;
+    --accent:#8b6651;
+    --line:#e8dfd5;
+    --soft:#efe7de;
+}
+
+* { box-sizing:border-box; }
+
+body {
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Noto Serif SC","Songti SC",serif;
+}
+
+button,input,textarea,select { font:inherit; }
+button { cursor:pointer; }
+
+header {
+    padding:22px clamp(16px,5vw,60px);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    border-bottom:1px solid var(--line);
+    background:var(--paper);
+}
+
+.brand {
+    font-size:22px;
+    letter-spacing:3px;
+    white-space:nowrap;
+}
+
+.brand small {
+    display:block;
+    font:11px sans-serif;
+    color:var(--muted);
+    letter-spacing:2px;
+    margin-top:5px;
+}
+
+.actions {
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.btn {
+    border:1px solid var(--line);
+    background:var(--paper);
+    padding:9px 13px;
+    border-radius:7px;
+    color:var(--ink);
+}
+
+.btn.primary {
+    background:var(--accent);
+    color:white;
+    border-color:var(--accent);
+}
+
+.btn.danger { color:#a34d42; }
+
+.btn:disabled {
+    opacity:.4;
+    cursor:not-allowed;
+}
+
+main {
+    max-width:1100px;
+    margin:30px auto;
+    padding:0 20px 65px;
+}
+
+.crumb {
+    font:13px sans-serif;
+    color:var(--muted);
+    margin-bottom:20px;
+}
+
+.crumb button {
+    border:0;
+    background:none;
+    color:var(--accent);
+    padding:0;
+}
+
+.hero {
+    padding:32px 28px;
+    background:linear-gradient(120deg,#e9ded2,#f7f1e9);
+    border-radius:12px;
+    margin-bottom:24px;
+}
+
+.eyebrow {
+    font:11px sans-serif;
+    letter-spacing:3px;
+    color:var(--accent);
+}
+
+h1 {
+    font-size:29px;
+    font-weight:500;
+    margin:12px 0 8px;
+}
+
+.hero p {
+    color:#766b61;
+    margin:0;
+    line-height:1.8;
+}
+
+.searchbar {
+    display:flex;
+    gap:8px;
+    margin:18px 0;
+}
+
+.searchbar input {
+    flex:1;
+    min-width:0;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:11px 13px;
+    background:var(--paper);
+    color:var(--ink);
+}
+
+.filters {
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin:0 0 22px;
+}
+
+.filters select {
+    border:1px solid var(--line);
+    border-radius:7px;
+    padding:8px;
+    background:var(--paper);
+    color:var(--ink);
+}
+
+.section-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:22px 0 13px;
+}
+
+.section-head h2 {
+    font-size:19px;
+    font-weight:500;
+    margin:0;
+}
+
+.muted {
+    color:var(--muted);
+    font:13px sans-serif;
+}
+
+.grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:14px;
+}
+
+.tile {
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:17px;
+    min-height:160px;
+}
+
+.tile:hover { border-color:#c8b5a4; }
+
+.cover {
+    width:100%;
+    height:165px;
+    object-fit:cover;
+    border-radius:7px;
+    background:var(--soft);
+    margin-bottom:10px;
+}
+
+.tile h3 {
+    font-size:17px;
+    font-weight:500;
+    margin:8px 0;
+}
+
+.tile p {
+    font:12px sans-serif;
+    color:var(--muted);
+    line-height:1.6;
+    margin:5px 0;
+}
+
+.tile-actions {
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+    margin-top:13px;
+}
+
+.tag {
+    display:inline-block;
+    background:var(--soft);
+    color:#806957;
+    padding:3px 8px;
+    border-radius:20px;
+    font:11px sans-serif;
+    margin:3px 3px 0 0;
+}
+
+.empty {
+    padding:42px 18px;
+    text-align:center;
+    background:var(--paper);
+    border:1px dashed #d8cbbf;
+    border-radius:10px;
+    color:var(--muted);
+    line-height:2;
+}
+
+.list {
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.list-row {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:15px 17px;
+    border-bottom:1px solid var(--line);
+}
+
+.list-row:last-child { border-bottom:0; }
+
+.num {
+    font:12px sans-serif;
+    color:#aa9b8d;
+    width:26px;
+}
+
+.row-main {
+    flex:1;
+    min-width:0;
+}
+
+.row-main h3 {
+    font-size:16px;
+    font-weight:500;
+    margin:0 0 5px;
+}
+
+.row-main p {
+    font:12px sans-serif;
+    color:var(--muted);
+    margin:0;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+}
+
+.row-actions {
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+}
+
+.reader {
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:clamp(22px,6vw,62px);
+    max-width:820px;
+    margin:auto;
+}
+
+.reader h1 {
+    text-align:center;
+    font-size:27px;
+    margin:0 0 10px;
+}
+
+.reader .meta {
+    text-align:center;
+    color:var(--muted);
+    font:12px sans-serif;
+    margin-bottom:35px;
+}
+
+.reader .body {
+    font-size:17px;
+    line-height:2.2;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+}
+
+.reader-tools {
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    flex-wrap:wrap;
+    margin:-12px 0 24px;
+}
+
+.reader-nav {
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    margin-top:30px;
+}
+
+.modal-back {
+    position:fixed;
+    inset:0;
+    background:#211a1680;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    z-index:5;
+}
+
+.modal-back.show { display:flex; }
+
+.modal {
+    background:var(--paper);
+    width:min(600px,100%);
+    padding:23px;
+    border-radius:12px;
+    max-height:92vh;
+    overflow:auto;
+}
+
+.modal h2 {
+    font-weight:500;
+    margin:0 0 15px;
+}
+
+.field { display:block; margin:12px 0; }
+
+.field span {
+    display:block;
+    font:12px sans-serif;
+    color:var(--muted);
+    margin-bottom:6px;
+}
+
+.field input,
+.field textarea,
+.field select {
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:7px;
+    padding:10px;
+    background:white;
+    color:var(--ink);
+}
+
+.field textarea {
+    min-height:220px;
+    resize:vertical;
+    line-height:1.8;
+}
+
+.field textarea.short { min-height:85px; }
+
+.modal-foot {
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:17px;
+}
+
+footer {
+    text-align:center;
+    color:#a69b90;
+    font:11px sans-serif;
+    padding:22px;
+}
+
+@media(max-width:620px) {
+    header {
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .actions { width:100%; }
+
+    .hero { padding:24px 18px; }
+
+    .list-row {
+        align-items:flex-start;
+        flex-wrap:wrap;
+    }
+
+    .row-main { min-width:65%; }
+
+    .row-actions { margin-left:38px; }
+
+    .searchbar { flex-wrap:wrap; }
+
+    .searchbar input { flex-basis:100%; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="brand">
+        私人小说馆
+        <small>MY PRIVATE LIBRARY</small>
+    </div>
+
+    <div class="actions">
+        <button class="btn" id="reloadBtn" hidden>
+            ↻ Reload JSON
+        </button>
+
+        <button class="btn" id="exportBtn">
+            导出备份
+        </button>
+
+        <button class="btn" id="importBtn">
+            导入备份
+        </button>
+
+        <button class="btn primary" id="addBtn">
+            ＋ 新建小说
+        </button>
+
+        <input type="file" id="reloadFile"
+               accept=".json,application/json" hidden>
+
+        <input type="file" id="importFile"
+               accept=".json,application/json" hidden>
+    </div>
+</header>
+
+<main>
+
+    <div class="crumb" id="crumb"></div>
+
+    <section class="hero">
+        <div class="eyebrow">A QUIET PLACE FOR STORIES</div>
+
+        <h1 id="heroTitle">
+            把故事，收藏在自己的角落。
+        </h1>
+
+        <p id="heroDesc">
+            建立小说、篇章与章节，慢慢整理属于你的文字世界。
+        </p>
+    </section>
+
+    <div class="searchbar">
+        <input id="searchInput"
+               placeholder="搜索小说、篇章、章节或正文内容…">
+
+        <button class="btn" id="searchBtn">搜索</button>
+
+        <button class="btn" id="favoritesBtn">
+            ★ 收藏小说
+        </button>
+
+        <button class="btn" id="clearSearchBtn">
+            返回书架
+        </button>
+    </div>
+
+    <div class="filters" id="filters">
+        <select id="tagFilter">
+            <option value="">全部分类</option>
+        </select>
+
+        <select id="sortFilter">
+            <option value="new">最近添加</option>
+            <option value="name">按名称排序</option>
+        </select>
+    </div>
+
+    <div class="section-head">
+        <h2 id="sectionTitle">我的小说</h2>
+        <span class="muted" id="count"></span>
+    </div>
+
+    <div id="content"></div>
+
+</main>
+
+<footer>
+    私人小说馆 · 内容保存在当前浏览器 LocalStorage
+</footer>
+
+
+<div class="modal-back" id="modalBack">
+
+    <div class="modal">
+
+        <h2 id="modalTitle">新建小说</h2>
+
+        <form id="editForm">
+
+            <label class="field">
+                <span>名称</span>
+                <input id="nameInput"
+                       maxlength="160"
+                       required
+                       placeholder="输入名称">
+            </label>
+
+            <label class="field" id="descField">
+                <span>简介（可选）</span>
+                <textarea class="short"
+                          id="descInput"
+                          placeholder="写下一段简介..."></textarea>
+            </label>
+
+            <label class="field" id="tagsField">
+                <span>分类标签（多个标签用逗号分隔）</span>
+                <input id="tagsInput"
+                       placeholder="例如：爱情, 奇幻">
+            </label>
+
+            <label class="field" id="coverField">
+                <span>小说封面（可选）</span>
+                <input id="coverInput"
+                       type="file"
+                       accept="image/*">
+
+                <small id="coverHint" style="color:#8a8178">
+                    也可以在 JSON 中使用 covers/novel1.jpg 这样的相对路径
+                </small>
+            </label>
+
+            <label class="field" id="bodyField">
+                <span>章节正文</span>
+                <textarea id="bodyInput"
+                          placeholder="在这里写下你的故事..."></textarea>
+            </label>
+
+            <div class="modal-foot">
+                <button type="button" class="btn" id="cancelBtn">
+                    取消
+                </button>
+
+                <button class="btn primary" type="submit">
+                    保存
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<script>
+"use strict";
+
+/* =========================================
+   1. 基本设置
+========================================= */
+
+const KEY = "private_novel_library_v1";
+
+const DEFAULT_TAGS = [
+    "玄幻","修仙","都市","爱情","科幻",
+    "悬疑","历史","武侠","奇幻","其他"
+];
+
+let data = loadData();
+
+let level = "home";
+
+let novelId = null;
+let volumeId = null;
+let chapterId = null;
+
+let editing = null;
+
+let searchTerm = "";
+let favoritesOnly = false;
+
+let readerFont = 17;
+let readerTheme = "light";
+
+
+function el(id) {
+    return document.getElementById(id);
+}
+
+
+function uid() {
+    return "id_" + Date.now().toString(36) +
+        "_" + Math.random().toString(36).slice(2,8);
+}
+
+
+function esc(value = "") {
+    return String(value ?? "").replace(/[&<>"']/g, c => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+    }[c]));
+}
+
+
+function safeArray(value) {
+    return Array.isArray(value) ? value : [];
+}
+
+
+/* =========================================
+   2. JSON 数据格式转换
+
+   你的 novels.json 使用：
+
+   Novel:
+   title
+   description
+   cover
+   tags
+   favorite
+   volumes
+
+   Volume:
+   title
+   chapters
+
+   Chapter:
+   title
+   content
+
+   网站内部使用：
+   name / desc / body
+
+   这里负责自动转换。
+========================================= */
+
+function normalizeChapter(c) {
+
+    c = c && typeof c === "object" ? c : {};
+
+    return {
+        id: c.id || uid(),
+
+        name: String(c.name ?? c.title ?? ""),
+
+        body: String(c.body ?? c.content ?? ""),
+
+        favorite: !!c.favorite,
+
+        read: !!c.read
+    };
+}
+
+
+function normalizeVolume(v) {
+
+    v = v && typeof v === "object" ? v : {};
+
+    return {
+        id: v.id || uid(),
+
+        name: String(v.name ?? v.title ?? ""),
+
+        chapters: safeArray(v.chapters).map(normalizeChapter)
+    };
+}
+
+
+function normalizeNovel(n) {
+
+    n = n && typeof n === "object" ? n : {};
+
+    return {
+        id: n.id || uid(),
+
+        name: String(n.name ?? n.title ?? ""),
+
+        desc: String(n.desc ?? n.description ?? ""),
+
+        cover: String(n.cover ?? ""),
+
+        tags: safeArray(n.tags).map(String),
+
+        favorite: !!n.favorite,
+
+        volumes: safeArray(n.volumes).map(normalizeVolume),
+
+        lastRead: n.lastRead || null
+    };
+}
+
+
+function normalizeData(value) {
+
+    if (!Array.isArray(value)) {
+        throw new Error("JSON 顶层必须是数组");
+    }
+
+    return value.map(normalizeNovel);
+}
+
+
+/* =========================================
+   3. LocalStorage
+========================================= */
+
+function loadData() {
+
+    try {
+
+        const raw = localStorage.getItem(KEY);
+
+        if (!raw) return [];
+
+        const parsed = JSON.parse(raw);
+
+        return normalizeData(parsed);
+
+    } catch(error) {
+
+        console.error("LocalStorage data error:", error);
+
+        return [];
+    }
+}
+
+
+function save() {
+
+    localStorage.setItem(KEY, JSON.stringify(data));
+
+    updateReloadButton();
+}
+
+
+function updateReloadButton() {
+
+    el("reloadBtn").hidden = data.length !== 0;
+}
+
+
+/* =========================================
+   4. Reload JSON
+
+   不使用 fetch。
+
+   双击 index.html 时不会自动读取 JSON。
+
+   只有用户点击 Reload 后，
+   才会打开文件选择器。
+========================================= */
+
+el("reloadBtn").onclick = () => {
+
+    el("reloadFile").click();
+
+};
+
+
+el("reloadFile").onchange = async e => {
+
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    try {
+
+        const text = await file.text();
+
+        const parsed = JSON.parse(text);
+
+        const imported = normalizeData(parsed);
+
+        if (!confirm(
+            `准备读取 ${imported.length} 部小说并写入当前浏览器。继续吗？`
+        )) {
+            return;
+        }
+
+        data = imported;
+
+        save();
+
+        goHome();
+
+        alert(`成功读取 ${data.length} 部小说！`);
+
+    } catch(error) {
+
+        console.error(error);
+
+        alert(
+            "读取失败：请确认选择的是正确的 novels.json，且 JSON 格式完整。"
+        );
+
+    } finally {
+
+        e.target.value = "";
+    }
+};
+
+
+/* =========================================
+   5. 数据查询
+========================================= */
+
+function currentNovel() {
+
+    return data.find(n => n.id === novelId);
+}
+
+
+function currentVolume() {
+
+    return currentNovel()?.volumes.find(v => v.id === volumeId);
+}
+
+
+function allChapters() {
+
+    return data.flatMap(n =>
+        n.volumes.flatMap(v =>
+            v.chapters.map(c => ({
+                ...c,
+                novel:n,
+                volume:v
+            }))
+        )
+    );
+}
+
+
+function novelChapterCount(n) {
+
+    return n.volumes.reduce(
+        (sum,v) => sum + v.chapters.length,
+        0
+    );
+}
+
+
+function imageCover(n) {
+
+    if (n.cover) {
+
+        return `
+            <img
+                class="cover"
+                src="${esc(n.cover)}"
+                alt="小说封面"
+                onerror="this.style.display='none'"
+            >
+        `;
+    }
+
+    return `
+        <div class="cover"
+             style="display:grid;place-items:center;font-size:42px;color:#aa9582">
+            ▤
+        </div>
+    `;
+}
+
+
+/* =========================================
+   6. 页面导航
+========================================= */
+
+function setCrumb() {
+
+    const parts = [
+        `<button onclick="goHome()">书架</button>`
+    ];
+
+    if (novelId) {
+
+        parts.push(`
+            <button onclick="goNovel()">
+                ${esc(currentNovel()?.name || "小说")}
+            </button>
+        `);
+    }
+
+    if (volumeId) {
+
+        parts.push(`
+            <button onclick="goVolume()">
+                ${esc(currentVolume()?.name || "篇章")}
+            </button>
+        `);
+    }
+
+    if (chapterId) {
+        parts.push("阅读");
+    }
+
+    el("crumb").innerHTML = parts.join("　/　");
+}
+
+
+function goHome() {
+
+    level = "home";
+
+    novelId = null;
+    volumeId = null;
+    chapterId = null;
+
+    favoritesOnly = false;
+
+    render();
+}
+
+
+function goNovel() {
+
+    level = "novel";
+
+    volumeId = null;
+    chapterId = null;
+
+    render();
+}
+
+
+function goVolume() {
+
+    level = "volume";
+
+    chapterId = null;
+
+    render();
+}
+
+
+/* =========================================
+   7. 分类筛选
+========================================= */
+
+function renderFilters() {
+
+    const selected = el("tagFilter").value;
+
+    const tags = [
+        ...new Set([
+            ...DEFAULT_TAGS,
+            ...data.flatMap(n => n.tags)
+        ])
+    ];
+
+    el("tagFilter").innerHTML =
+        `<option value="">全部分类</option>` +
+        tags.map(t =>
+            `<option value="${esc(t)}">${esc(t)}</option>`
+        ).join("");
+
+    el("tagFilter").value =
+        tags.includes(selected) ? selected : "";
+
+    el("filters").style.display =
+        level === "home" ? "flex" : "none";
+}
+
+
+/* =========================================
+   8. 页面显示
+========================================= */
+
+function render() {
+
+    setCrumb();
+
+    updateReloadButton();
+
+    renderFilters();
+
+    const content = el("content");
+
+
+    /* ---------- 小说书架 ---------- */
+
+    if (level === "home") {
+
+        el("heroTitle").textContent =
+            "把故事，收藏在自己的角落。";
+
+        el("heroDesc").textContent =
+            "建立小说、篇章与章节，慢慢整理属于你的文字世界。";
+
+        el("sectionTitle").textContent =
+            favoritesOnly ? "我收藏的小说" : "我的小说";
+
+
+        let novels = [...data];
+
+        const tag = el("tagFilter").value;
+
+        if (favoritesOnly) {
+
+            novels = novels.filter(n => n.favorite);
+        }
+
+        if (tag) {
+
+            novels = novels.filter(n => n.tags.includes(tag));
+        }
+
+        if (el("sortFilter").value === "name") {
+
+            novels.sort((a,b) =>
+                a.name.localeCompare(b.name,"zh-CN")
+            );
+        }
+
+        el("count").textContent = `${novels.length} 部小说`;
+
+
+        content.innerHTML = novels.length
+
+            ? `
+                <div class="grid">
+
+                ${novels.map(n => `
+
+                    <article class="tile">
+
+                        ${imageCover(n)}
+
+                        <h3>
+                            ${esc(n.name)}
+                            ${n.favorite
+                                ? '<span style="color:#b35d56">★</span>'
+                                : ''}
+                        </h3>
+
+                        <p>${esc(n.desc || "暂无简介")}</p>
+
+                        <div>
+                            ${n.tags.map(t =>
+                                `<span class="tag">${esc(t)}</span>`
+                            ).join("")}
+                        </div>
+
+                        <p>
+                            ${n.volumes.length} 个篇章 ·
+                            ${novelChapterCount(n)} 章
+                        </p>
+
+                        <div class="tile-actions">
+
+                            <button class="btn primary"
+                                onclick="openNovel('${n.id}')">
+                                进入
+                            </button>
+
+                            <button class="btn"
+                                onclick="resumeNovel('${n.id}')">
+                                继续阅读
+                            </button>
+
+                            <button class="btn"
+                                onclick="toggleNovelFavorite('${n.id}')">
+                                ${n.favorite ? "取消收藏" : "☆ 收藏"}
+                            </button>
+
+                            <button class="btn"
+                                onclick="editItem('novel','${n.id}')">
+                                编辑
+                            </button>
+
+                            <button class="btn danger"
+                                onclick="deleteItem('novel','${n.id}')">
+                                删除
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                `).join("")}
+
+                </div>
+            `
+
+            : `
+                <div class="empty">
+
+                    ${
+                        data.length
+                        ? "没有符合条件的小说。"
+                        : "这里还没有小说。<br>" +
+                          "如果你已有 novels.json，请点击右上角「Reload JSON」读取。<br>" +
+                          "也可以点击「新建小说」开始建立书架。"
+                    }
+
+                </div>
+            `;
+
+
+    /* ---------- 篇章列表 ---------- */
+
+    } else if (level === "novel") {
+
+        const n = currentNovel();
+
+        if (!n) return goHome();
+
+        el("heroTitle").textContent = n.name;
+
+        el("heroDesc").textContent =
+            n.desc || "这部小说还没有简介。";
+
+        el("sectionTitle").textContent = "篇章";
+
+        el("count").textContent =
+            `${n.volumes.length} 个篇章`;
+
+
+        content.innerHTML = n.volumes.length
+
+            ? `
+                <div class="list">
+
+                ${n.volumes.map((v,i) => `
+
+                    <div class="list-row">
+
+                        <span class="num">
+                            ${String(i+1).padStart(2,"0")}
+                        </span>
+
+                        <div class="row-main">
+
+                            <h3>${esc(v.name)}</h3>
+
+                            <p>${v.chapters.length} 个章节</p>
+
+                        </div>
+
+                        <button class="btn primary"
+                            onclick="openVolume('${v.id}')">
+                            查看章节
+                        </button>
+
+                        <div class="row-actions">
+
+                            <button class="btn"
+                                onclick="editItem('volume','${v.id}')">
+                                编辑
+                            </button>
+
+                            <button class="btn danger"
+                                onclick="deleteItem('volume','${v.id}')">
+                                删除
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                `).join("")}
+
+                </div>
+            `
+
+            : `
+                <div class="empty">
+                    这部小说还没有篇章。
+                </div>
+            `;
+
+
+    /* ---------- 章节列表 ---------- */
+
+    } else if (level === "volume") {
+
+        const v = currentVolume();
+
+        if (!v) return goHome();
+
+        el("heroTitle").textContent = v.name;
+
+        el("heroDesc").textContent =
+            `所属小说：${currentNovel().name}`;
+
+        el("sectionTitle").textContent = "章节";
+
+        el("count").textContent =
+            `${v.chapters.length} 个章节`;
+
+
+        content.innerHTML = v.chapters.length
+
+            ? `
+                <div class="list">
+
+                ${v.chapters.map((c,i) => `
+
+                    <div class="list-row">
+
+                        <span class="num">
+                            ${String(i+1).padStart(2,"0")}
+                        </span>
+
+                        <div class="row-main">
+
+                            <h3>${esc(c.name)}</h3>
+
+                            <p>
+                                ${esc((c.body || "").slice(0,100).replace(/\n/g," "))}
+                                ${c.body.length > 100 ? "…" : ""}
+                            </p>
+
+                        </div>
+
+                        <button class="btn primary"
+                            onclick="readChapter('${c.id}')">
+                            阅读
+                        </button>
+
+                        <div class="row-actions">
+
+                            <button class="btn"
+                                onclick="editItem('chapter','${c.id}')">
+                                编辑
+                            </button>
+
+                            <button class="btn danger"
+                                onclick="deleteItem('chapter','${c.id}')">
+                                删除
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                `).join("")}
+
+                </div>
+            `
+
+            : `
+                <div class="empty">
+                    这个篇章还没有章节。
+                </div>
+            `;
+
+
+    /* ---------- 搜索结果 ---------- */
+
+    } else if (level === "search") {
+
+        el("heroTitle").textContent = "搜索结果";
+
+        el("heroDesc").textContent =
+            `关键词：${esc(searchTerm)}`;
+
+        el("sectionTitle").textContent = "匹配结果";
+
+
+        const q = searchTerm.toLocaleLowerCase();
+
+        const matches = [];
+
+        data.forEach(n =>
+            n.volumes.forEach(v =>
+                v.chapters.forEach(c => {
+
+                    const hay = [
+                        n.name,
+                        n.desc,
+                        n.tags.join(" "),
+                        v.name,
+                        c.name,
+                        c.body
+                    ].join(" ").toLocaleLowerCase();
+
+                    if (hay.includes(q)) {
+                        matches.push({n,v,c});
+                    }
+
+                })
+            )
+        );
+
+
+        el("count").textContent =
+            `${matches.length} 条结果`;
+
+
+        content.innerHTML = matches.length
+
+            ? `
+                <div class="list">
+
+                ${matches.map((x,i) => `
+
+                    <div class="list-row">
+
+                        <span class="num">
+                            ${String(i+1).padStart(2,"0")}
+                        </span>
+
+                        <div class="row-main">
+
+                            <h3>${esc(x.c.name)}</h3>
+
+                            <p>
+                                ${esc(x.n.name)} ·
+                                ${esc(x.v.name)} ·
+                                ${esc((x.c.body || "").slice(0,100))}
+                            </p>
+
+                        </div>
+
+                        <button class="btn primary"
+                            onclick="openSearchChapter('${x.n.id}','${x.v.id}','${x.c.id}')">
+                            阅读
+                        </button>
+
+                    </div>
+
+                `).join("")}
+
+                </div>
+            `
+
+            : `
+                <div class="empty">
+                    没有找到内容。
+                </div>
+            `;
+
+
+    /* ---------- 阅读页面 ---------- */
+
+    } else if (level === "reader") {
+
+        const c = currentVolume()?.chapters.find(
+            x => x.id === chapterId
+        );
+
+        if (!c) return goHome();
+
+        const chapters = currentVolume().chapters;
+
+        const idx = chapters.findIndex(
+            x => x.id === chapterId
+        );
+
+        el("heroTitle").textContent =
+            currentNovel().name;
+
+        el("heroDesc").textContent =
+            currentVolume().name;
+
+        el("sectionTitle").textContent = "正在阅读";
+
+        el("count").textContent = "";
+
+
+        content.innerHTML = `
+
+            <article class="reader" id="readerCard">
+
+                <div class="reader-tools">
+
+                    <button class="btn"
+                        onclick="changeFont(-1)">
+                        A−
+                    </button>
+
+                    <button class="btn"
+                        onclick="changeFont(1)">
+                        A＋
+                    </button>
+
+                    <button class="btn"
+                        onclick="toggleReaderTheme()">
+                        切换阅读背景
+                    </button>
+
+                </div>
+
+                <h1>${esc(c.name)}</h1>
+
+                <div class="meta">
+                    ${esc(currentNovel().name)}
+                    ·
+                    ${esc(currentVolume().name)}
+                </div>
+
+                <div class="body"
+                     id="readerBody"
+                     style="font-size:${readerFont}px">
+
+                    ${esc(c.body || "（本章暂无正文）")}
+
+                </div>
+
+                <div class="reader-nav">
+
+                    <button class="btn"
+                        ${idx <= 0 ? "disabled" : ""}
+                        onclick="readChapter('${chapters[idx-1]?.id || ""}')">
+                        ← 上一章
+                    </button>
+
+                    <button class="btn"
+                        onclick="goVolume()">
+                        返回章节
+                    </button>
+
+                    <button class="btn"
+                        ${idx >= chapters.length-1 ? "disabled" : ""}
+                        onclick="readChapter('${chapters[idx+1]?.id || ""}')">
+                        下一章 →
+                    </button>
+
+                </div>
+
+            </article>
+
+        `;
+
+        applyReaderTheme();
+    }
+
+
+    el("addBtn").textContent =
+        level === "home" ? "＋ 新建小说" :
+        level === "novel" ? "＋ 新增篇章" :
+        level === "volume" ? "＋ 新增章节" :
+        "＋ 新建小说";
+}
+
+
+/* =========================================
+   9. 打开小说、篇章、章节
+========================================= */
+
+function openNovel(id) {
+
+    novelId = id;
+
+    volumeId = null;
+    chapterId = null;
+
+    level = "novel";
+
+    render();
+}
+
+
+function openVolume(id) {
+
+    volumeId = id;
+
+    chapterId = null;
+
+    level = "volume";
+
+    render();
+}
+
+
+function readChapter(id) {
+
+    if (!id) return;
+
+    const c = currentVolume()?.chapters.find(
+        x => x.id === id
+    );
+
+    if (c) {
+
+        currentNovel().lastRead = {
+            volumeId,
+            chapterId:id
+        };
+
+        save();
+    }
+
+    chapterId = id;
+
+    level = "reader";
+
+    render();
+
+    window.scrollTo(0,0);
+}
+
+
+function resumeNovel(id) {
+
+    const n = data.find(x => x.id === id);
+
+    if (!n) return;
+
+    novelId = id;
+
+    if (n.lastRead) {
+
+        const v = n.volumes.find(
+            x => x.id === n.lastRead.volumeId
+        );
+
+        const c = v?.chapters.find(
+            x => x.id === n.lastRead.chapterId
+        );
+
+        if (v && c) {
+
+            volumeId = v.id;
+            chapterId = c.id;
+
+            level = "reader";
+
+            render();
+
+            return;
+        }
+    }
+
+    level = "novel";
+
+    render();
+}
+
+
+/* =========================================
+   10. 小说收藏
+========================================= */
+
+function toggleNovelFavorite(id) {
+
+    const n = data.find(x => x.id === id);
+
+    if (!n) return;
+
+    n.favorite = !n.favorite;
+
+    save();
+
+    render();
+}
+
+
+/* =========================================
+   11. 阅读设置
+========================================= */
+
+function changeFont(delta) {
+
+    readerFont = Math.max(
+        13,
+        Math.min(30, readerFont + delta)
+    );
+
+    const body = el("readerBody");
+
+    if (body) {
+        body.style.fontSize = readerFont + "px";
+    }
+}
+
+
+function toggleReaderTheme() {
+
+    readerTheme =
+        readerTheme === "light" ? "dark" :
+        readerTheme === "dark" ? "sepia" :
+        "light";
+
+    applyReaderTheme();
+}
+
+
+function applyReaderTheme() {
+
+    const r = el("readerCard");
+
+    if (!r) return;
+
+    const themes = {
+
+        light:["#fffdf9","#302b27"],
+
+        dark:["#242321","#e8e1d8"],
+
+        sepia:["#f1e5cf","#514333"]
+
+    };
+
+    r.style.background = themes[readerTheme][0];
+
+    r.style.color = themes[readerTheme][1];
+}
+
+
+/* =========================================
+   12. 搜索
+========================================= */
+
+function runSearch() {
+
+    searchTerm = el("searchInput").value.trim();
+
+    if (!searchTerm) {
+        goHome();
+        return;
+    }
+
+    favoritesOnly = false;
+
+    level = "search";
+
+    render();
+}
+
+
+function openSearchChapter(nid,vid,cid) {
+
+    novelId = nid;
+
+    volumeId = vid;
+
+    readChapter(cid);
+}
+
+
+/* =========================================
+   13. 新增、编辑、删除
+========================================= */
+
+function findItem(type,id) {
+
+    if (type === "novel") {
+        return data.find(n => n.id === id);
+    }
+
+    if (type === "volume") {
+        return currentNovel()?.volumes.find(v => v.id === id);
+    }
+
+    return currentVolume()?.chapters.find(c => c.id === id);
+}
+
+
+function openEditor(type,itemId=null) {
+
+    editing = {type,itemId};
+
+    const obj = itemId
+        ? findItem(type,itemId)
+        : null;
+
+
+    el("modalTitle").textContent =
+        (itemId ? "编辑" : "新建") +
+        ({
+            novel:"小说",
+            volume:"篇章",
+            chapter:"章节"
+        }[type]);
+
+
+    el("nameInput").value = obj?.name || "";
+
+    el("descInput").value = obj?.desc || "";
+
+    el("tagsInput").value =
+        (obj?.tags || []).join(", ");
+
+    el("bodyInput").value = obj?.body || "";
+
+    el("coverInput").value = "";
+
+    el("coverHint").textContent =
+        obj?.cover
+        ? "已有封面（选择新图片可替换）"
+        : "选择 JPG、PNG 或 WebP 图片；JSON 也支持 covers/xxx.jpg 相对路径";
+
+
+    el("descField").style.display =
+        type === "novel" ? "block" : "none";
+
+    el("tagsField").style.display =
+        type === "novel" ? "block" : "none";
+
+    el("coverField").style.display =
+        type === "novel" ? "block" : "none";
+
+    el("bodyField").style.display =
+        type === "chapter" ? "block" : "none";
+
+
+    el("modalBack").classList.add("show");
+
+    el("nameInput").focus();
+}
+
+
+function editItem(type,id) {
+
+    openEditor(type,id);
+}
+
+
+function deleteItem(type,id) {
+
+    if (!confirm(
+        "确定删除这个项目及其下属内容吗？此操作无法撤销。"
+    )) return;
+
+
+    if (type === "novel") {
+
+        data = data.filter(n => n.id !== id);
+
+    }
+
+    if (type === "volume") {
+
+        const n = currentNovel();
+
+        if (n) {
+            n.volumes = n.volumes.filter(v => v.id !== id);
+        }
+
+    }
+
+    if (type === "chapter") {
+
+        const v = currentVolume();
+
+        if (v) {
+            v.chapters = v.chapters.filter(c => c.id !== id);
+        }
+
+    }
+
+    save();
+
+    render();
+}
+
+
+/* =========================================
+   14. 封面图片读取
+========================================= */
+
+async function readCoverFile(file) {
+
+    if (!file) return null;
+
+    if (file.size > 2 * 1024 * 1024) {
+
+        throw new Error("封面图片请小于 2MB");
+    }
+
+    return await new Promise((resolve,reject) => {
+
+        const reader = new FileReader();
+
+        reader.onload = () => resolve(reader.result);
+
+        reader.onerror = reject;
+
+        reader.readAsDataURL(file);
+    });
+}
+
+
+/* =========================================
+   15. 保存表单
+========================================= */
+
+el("editForm").onsubmit = async e => {
+
+    e.preventDefault();
+
+    const {type,itemId} = editing;
+
+    const name = el("nameInput").value.trim();
+
+    if (!name) return;
+
+    const old = itemId
+        ? findItem(type,itemId)
+        : null;
+
+
+    let cover = type === "novel"
+        ? (old?.cover || "")
+        : "";
+
+
+    try {
+
+        const selected = el("coverInput").files[0];
+
+        if (type === "novel" && selected) {
+
+            cover = await readCoverFile(selected);
+        }
+
+    } catch(err) {
+
+        alert(err.message);
+
+        return;
+    }
+
+
+    const base = {
+        id:itemId || uid(),
+        name
+    };
+
+
+    if (type === "novel") {
+
+        const values = {
+
+            ...base,
+
+            desc:el("descInput").value.trim(),
+
+            tags:el("tagsInput").value
+                .split(",")
+                .map(x => x.trim())
+                .filter(Boolean),
+
+            cover,
+
+            favorite:old?.favorite || false,
+
+            volumes:old?.volumes || []
+
+        };
+
+        if (old) {
+
+            Object.assign(old,values);
+
+        } else {
+
+            data.push(values);
+        }
+
+    } else if (type === "volume") {
+
+        if (old) {
+
+            old.name = name;
+
+        } else {
+
+            currentNovel().volumes.push({
+                ...base,
+                chapters:[]
+            });
+        }
+
+    } else {
+
+        const values = {
+
+            ...base,
+
+            body:el("bodyInput").value,
+
+            favorite:old?.favorite || false
+
+        };
+
+        if (old) {
+
+            Object.assign(old,values);
+
+        } else {
+
+            currentVolume().chapters.push(values);
+        }
+    }
+
+
+    save();
+
+    el("modalBack").classList.remove("show");
+
+    render();
+};
+
+
+/* =========================================
+   16. 按钮事件
+========================================= */
+
+el("addBtn").onclick = () => {
+
+    if (level === "home") {
+
+        openEditor("novel");
+
+    } else if (level === "novel") {
+
+        openEditor("volume");
+
+    } else if (level === "volume") {
+
+        openEditor("chapter");
+
+    } else {
+
+        openEditor("novel");
+    }
+};
+
+
+el("cancelBtn").onclick = () => {
+
+    el("modalBack").classList.remove("show");
+};
+
+
+el("modalBack").addEventListener("click",e => {
+
+    if (e.target === el("modalBack")) {
+
+        el("modalBack").classList.remove("show");
+    }
+});
+
+
+el("searchBtn").onclick = runSearch;
+
+el("searchInput").addEventListener("keydown",e => {
+
+    if (e.key === "Enter") runSearch();
+});
+
+
+el("clearSearchBtn").onclick = goHome;
+
+
+el("favoritesBtn").onclick = () => {
+
+    favoritesOnly = true;
+
+    level = "home";
+
+    render();
+};
+
+
+el("tagFilter").onchange = render;
+
+el("sortFilter").onchange = render;
+
+
+/* =========================================
+   17. 普通 JSON 导入
+========================================= */
+
+el("importBtn").onclick = () => {
+
+    el("importFile").click();
+};
+
+
+el("importFile").onchange = async e => {
+
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    try {
+
+        const parsed = JSON.parse(await file.text());
+
+        const imported = normalizeData(parsed);
+
+        if (confirm(
+            "导入会替换当前书架内容，建议先导出备份。确定继续吗？"
+        )) {
+
+            data = imported;
+
+            save();
+
+            goHome();
+        }
+
+    } catch(error) {
+
+        alert("文件格式不正确，无法导入。");
+
+    } finally {
+
+        e.target.value = "";
+    }
+};
+
+
+/* =========================================
+   18. JSON 导出
+
+   导出回你原本的 novels.json 格式。
+========================================= */
+
+function exportNovelJSON() {
+
+    const output = data.map(n => ({
+
+        id:n.id,
+
+        title:n.name,
+
+        description:n.desc,
+
+        cover:n.cover,
+
+        tags:n.tags,
+
+        favorite:!!n.favorite,
+
+        volumes:n.volumes.map(v => ({
+
+            id:v.id,
+
+            title:v.name,
+
+            chapters:v.chapters.map(c => ({
+
+                id:c.id,
+
+                title:c.name,
+
+                content:c.body
+
+            }))
+
+        }))
+
+    }));
+
+
+    const blob = new Blob(
+        [JSON.stringify(output,null,2)],
+        {type:"application/json;charset=utf-8"}
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+
+    a.href = url;
+
+    a.download = "novels.json";
+
+    a.click();
+
+    setTimeout(() => URL.revokeObjectURL(url),1000);
+}
+
+
+el("exportBtn").onclick = exportNovelJSON;
+
+
+/* =========================================
+   19. 暴露给 HTML onclick 使用
+========================================= */
+
+window.goHome = goHome;
+window.goNovel = goNovel;
+window.goVolume = goVolume;
+
+window.openNovel = openNovel;
+window.openVolume = openVolume;
+window.readChapter = readChapter;
+
+window.resumeNovel = resumeNovel;
+window.toggleNovelFavorite = toggleNovelFavorite;
+
+window.editItem = editItem;
+window.deleteItem = deleteItem;
+
+window.openSearchChapter = openSearchChapter;
+
+window.changeFont = changeFont;
+window.toggleReaderTheme = toggleReaderTheme;
+
+
+/* =========================================
+   20. 启动网页
+========================================= */
+
+render();
+
+</script>
+
+</body>
+</html>
