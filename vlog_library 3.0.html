@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>私人小说馆</title>
+
+<style>
+:root {
+    --bg:#f5f1eb;
+    --paper:#fffdf9;
+    --ink:#302b27;
+    --muted:#8a8178;
+    --accent:#8b6651;
+    --line:#e8dfd5;
+    --soft:#efe7de;
+}
+
+* { box-sizing:border-box; }
+
+body {
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Noto Serif SC","Songti SC",serif;
+}
+
+button,input,textarea,select { font:inherit; }
+button { cursor:pointer; }
+
+header {
+    padding:24px clamp(18px,5vw,64px);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+    border-bottom:1px solid var(--line);
+    background:var(--paper);
+}
+
+.brand {
+    font-size:22px;
+    letter-spacing:3px;
+}
+
+.brand small {
+    display:block;
+    font:11px sans-serif;
+    color:var(--muted);
+    letter-spacing:2px;
+    margin-top:5px;
+}
+
+.actions {
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.btn {
+    border:1px solid var(--line);
+    background:var(--paper);
+    padding:9px 14px;
+    border-radius:7px;
+    color:var(--ink);
+}
+
+.btn.primary {
+    background:var(--accent);
+    color:white;
+    border-color:var(--accent);
+}
+
+.btn.danger { color:#a34d42; }
+
+main {
+    max-width:1100px;
+    margin:34px auto;
+    padding:0 22px 70px;
+}
+
+.crumb {
+    font:13px sans-serif;
+    color:var(--muted);
+    margin-bottom:22px;
+}
+
+.crumb button {
+    border:0;
+    background:none;
+    color:var(--accent);
+    padding:0;
+}
+
+.hero {
+    padding:34px 30px;
+    background:linear-gradient(120deg,#e9ded2,#f7f1e9);
+    border-radius:12px;
+    margin-bottom:25px;
+}
+
+.eyebrow {
+    font:11px sans-serif;
+    letter-spacing:3px;
+    color:var(--accent);
+}
+
+h1 {
+    font-size:30px;
+    font-weight:500;
+    margin:12px 0 8px;
+}
+
+.hero p {
+    color:#766b61;
+    margin:0;
+    line-height:1.8;
+}
+
+.searchbar {
+    display:flex;
+    gap:9px;
+    margin:20px 0;
+}
+
+.searchbar input {
+    flex:1;
+    min-width:0;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px;
+    background:var(--paper);
+    color:var(--ink);
+}
+
+.filters {
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+}
+
+.filters button {
+    border:1px solid var(--line);
+    background:var(--paper);
+    border-radius:20px;
+    padding:7px 14px;
+    color:var(--muted);
+}
+
+.filters button.active {
+    background:var(--accent);
+    color:white;
+    border-color:var(--accent);
+}
+
+.section-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:24px 0 14px;
+}
+
+.section-head h2 {
+    font-size:19px;
+    font-weight:500;
+    margin:0;
+}
+
+.muted {
+    color:var(--muted);
+    font:13px sans-serif;
+}
+
+.grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:16px;
+}
+
+.tile {
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px;
+    transition:.15s;
+    min-width:0;
+}
+
+.tile:hover {
+    transform:translateY(-2px);
+    border-color:#c8b5a4;
+}
+
+.cover {
+    width:100%;
+    height:240px;
+    object-fit:cover;
+    border-radius:7px;
+    background:var(--soft);
+    display:block;
+}
+
+.no-cover {
+    width:100%;
+    height:240px;
+    display:grid;
+    place-items:center;
+    background:var(--soft);
+    color:#aa9582;
+    font-size:45px;
+    border-radius:7px;
+}
+
+.tile h3 {
+    font-size:17px;
+    font-weight:500;
+    margin:14px 0 7px;
+}
+
+.tile p {
+    font:12px sans-serif;
+    color:var(--muted);
+    line-height:1.6;
+}
+
+.tags {
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin:10px 0;
+}
+
+.tag {
+    font:11px sans-serif;
+    padding:5px 9px;
+    border-radius:15px;
+    background:var(--soft);
+    color:var(--accent);
+}
+
+.tile-actions {
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+    margin-top:13px;
+}
+
+.list {
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.list-row {
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:17px 20px;
+    border-bottom:1px solid var(--line);
+}
+
+.list-row:last-child { border-bottom:0; }
+
+.num {
+    font:12px sans-serif;
+    color:#aa9b8d;
+    width:28px;
+}
+
+.row-main {
+    flex:1;
+    min-width:0;
+}
+
+.list-row h3 {
+    font-size:16px;
+    font-weight:500;
+    margin:0 0 5px;
+}
+
+.list-row p {
+    font:12px sans-serif;
+    color:var(--muted);
+    margin:0;
+    line-height:1.6;
+}
+
+.row-actions {
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+}
+
+.empty {
+    padding:45px 20px;
+    text-align:center;
+    background:var(--paper);
+    border:1px dashed #d8cbbf;
+    border-radius:10px;
+    color:var(--muted);
+    line-height:2;
+}
+
+.reader {
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:clamp(24px,6vw,68px);
+    max-width:820px;
+    margin:auto;
+}
+
+.reader h1 {
+    text-align:center;
+    font-size:27px;
+    margin:0 0 10px;
+}
+
+.reader .meta {
+    text-align:center;
+    color:var(--muted);
+    font:12px sans-serif;
+    margin-bottom:38px;
+}
+
+.reader .body {
+    font-size:18px;
+    line-height:2.25;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+}
+
+.reader-tools {
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:25px;
+}
+
+.reader-nav {
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:35px;
+}
+
+.modal-back {
+    position:fixed;
+    inset:0;
+    background:#211a1680;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    z-index:5;
+}
+
+.modal-back.show { display:flex; }
+
+.modal {
+    background:var(--paper);
+    width:min(560px,100%);
+    padding:25px;
+    border-radius:12px;
+    max-height:90vh;
+    overflow:auto;
+}
+
+.modal h2 {
+    font-weight:500;
+    margin:0 0 18px;
+}
+
+.field { display:block; margin:13px 0; }
+
+.field span {
+    display:block;
+    font:12px sans-serif;
+    color:var(--muted);
+    margin-bottom:7px;
+}
+
+.field input,
+.field textarea,
+.field select {
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:7px;
+    padding:11px;
+    background:white;
+    color:var(--ink);
+}
+
+.field textarea {
+    min-height:240px;
+    resize:vertical;
+    line-height:1.8;
+}
+
+.modal-foot {
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:18px;
+}
+
+footer {
+    text-align:center;
+    color:#a69b90;
+    font:11px sans-serif;
+    padding:25px;
+}
+
+@media(max-width:600px) {
+    header {
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .hero { padding:25px 20px; }
+
+    .list-row {
+        padding:14px 12px;
+        flex-wrap:wrap;
+    }
+
+    .row-main { min-width:65%; }
+
+    .cover,.no-cover { height:200px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="brand">
+        私人小说馆
+        <small>MY PRIVATE LIBRARY</small>
+    </div>
+
+    <div class="actions">
+        <button class="btn" id="exportBtn">导出备份</button>
+        <button class="btn" id="importBtn">导入备份</button>
+        <button class="btn primary" id="addBtn">＋ 新建小说</button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+    </div>
+</header>
+
+<main>
+
+    <div class="crumb" id="crumb"></div>
+
+    <section class="hero">
+        <div class="eyebrow">A QUIET PLACE FOR STORIES</div>
+        <h1 id="heroTitle">把故事，收藏在自己的角落。</h1>
+        <p id="heroDesc">建立小说、篇章与章节，慢慢整理属于你的文字世界。</p>
+    </section>
+
+    <div class="searchbar">
+        <input id="searchInput" placeholder="搜索小说、篇章、章节或正文...">
+        <button class="btn primary" id="searchBtn">搜索</button>
+        <button class="btn" id="favoriteBtn">★ 我的收藏</button>
+    </div>
+
+    <div id="filters" class="filters"></div>
+
+    <div class="section-head">
+        <h2 id="sectionTitle">我的小说</h2>
+        <span class="muted" id="count"></span>
+    </div>
+
+    <div id="content"></div>
+
+</main>
+
+<footer>私人小说馆 · MY PRIVATE LIBRARY</footer>
+
+<div class="modal-back" id="modalBack">
+    <div class="modal">
+
+        <h2 id="modalTitle">新建小说</h2>
+
+        <form id="editForm">
+
+            <label class="field">
+                <span>名称</span>
+                <input id="nameInput" maxlength="120" required>
+            </label>
+
+            <label class="field" id="descField">
+                <span>小说简介</span>
+                <textarea id="descInput" style="min-height:90px"></textarea>
+            </label>
+
+            <label class="field" id="tagField">
+                <span>小说分类标签</span>
+                <input id="tagInput" placeholder="例如：玄幻, 修仙, 热血">
+                <small style="color:#8a8178">
+                    多个标签请使用英文逗号或中文逗号分隔。
+                </small>
+            </label>
+
+            <label class="field" id="coverField">
+                <span>封面图片路径</span>
+                <input id="coverInput" placeholder="例如：covers/novel1.jpg">
+                <small style="color:#8a8178">
+                    填写 GitHub 仓库中的相对路径。
+                </small>
+            </label>
+
+            <label class="field" id="bodyField">
+                <span>章节正文</span>
+                <textarea id="bodyInput" placeholder="在这里写下你的故事..."></textarea>
+            </label>
+
+            <div class="modal-foot">
+                <button type="button" class="btn" id="cancelBtn">取消</button>
+                <button class="btn primary" type="submit">保存</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+const KEY = 'private_novel_library_v1';
+
+const DEFAULT_TAGS = [
+    '全部',
+    '玄幻',
+    '修仙',
+    '都市',
+    '爱情',
+    '科幻',
+    '悬疑',
+    '历史',
+    '武侠',
+    '奇幻',
+    '其他'
+];
+
+let data = loadData();
+
+let level = 'home';
+let novelId = null;
+let volumeId = null;
+let chapterId = null;
+
+let editing = null;
+let selectedTag = '全部';
+let searchTerm = '';
+
+let readerFont = 18;
+let readerTheme = 'light';
+
+function uid() {
+    return 'id_' + Date.now().toString(36) +
+        '_' + Math.random().toString(36).slice(2,8);
+}
+
+function loadData() {
+    try {
+        const result = JSON.parse(localStorage.getItem(KEY));
+        return Array.isArray(result) ? result : [];
+    } catch(e) {
+        return [];
+    }
+}
+
+function save() {
+    localStorage.setItem(KEY, JSON.stringify(data));
+}
+
+function el(id) {
+    return document.getElementById(id);
+}
+
+function esc(s='') {
+    return String(s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+    }[c]));
+}
+
+function currentNovel() {
+    return data.find(n => n.id === novelId);
+}
+
+function currentVolume() {
+    return currentNovel()?.volumes.find(v => v.id === volumeId);
+}
+
+function getAllChapters() {
+    return data.flatMap(n =>
+        (n.volumes || []).flatMap(v =>
+            (v.chapters || []).map(c => ({
+                ...c,
+                novel: n,
+                volume: v
+            }))
+        )
+    );
+}
+
+// 封面路径
+function coverHTML(n) {
+
+    if (n.cover) {
+        return `
+            <img class="cover"
+                src="${esc(n.cover)}"
+                alt="${esc(n.name)}封面"
+                onerror="this.outerHTML='<div class=&quot;no-cover&quot;>▤</div>'">
+        `;
+    }
+
+    return `<div class="no-cover">▤</div>`;
+}
+
+// 标签
+function getTags(n) {
+    if (Array.isArray(n.tags)) return n.tags;
+
+    return [];
+}
+
+// 小说收藏
+function toggleNovelFavorite(id) {
+
+    const n = data.find(x => x.id === id);
+
+    if (!n) return;
+
+    n.favorite = !n.favorite;
+
+    save();
+    render();
+}
+
+// 面包屑
+function setCrumb() {
+
+    let parts = [
+        `<button onclick="goHome()">书架</button>`
+    ];
+
+    if (novelId) {
+        parts.push(
+            `<button onclick="goNovel()">${esc(currentNovel()?.name || '小说')}</button>`
+        );
+    }
+
+    if (volumeId) {
+        parts.push(
+            `<button onclick="goVolume()">${esc(currentVolume()?.name || '篇章')}</button>`
+        );
+    }
+
+    if (chapterId) parts.push('阅读');
+
+    el('crumb').innerHTML = parts.join('　/　');
+}
+
+function goHome() {
+
+    level = 'home';
+
+    novelId = null;
+    volumeId = null;
+    chapterId = null;
+
+    selectedTag = '全部';
+
+    render();
+}
+
+function goNovel() {
+    level = 'novel';
+    volumeId = null;
+    chapterId = null;
+    render();
+}
+
+function goVolume() {
+    level = 'volume';
+    chapterId = null;
+    render();
+}
+
+// 分类筛选
+function renderFilters() {
+
+    const customTags = [
+        ...new Set(data.flatMap(n => getTags(n)))
+    ];
+
+    const tags = [...new Set([...DEFAULT_TAGS, ...customTags])];
+
+    if (level !== 'home' && level !== 'favorites') {
+        el('filters').innerHTML = '';
+        return;
+    }
+
+    el('filters').innerHTML = tags.map(tag => `
+        <button
+            class="${selectedTag === tag ? 'active' : ''}"
+            onclick="selectTag('${esc(tag)}')">
+            ${esc(tag)}
+        </button>
+    `).join('');
+}
+
+function selectTag(tag) {
+    selectedTag = tag;
+    render();
+}
+
+window.selectTag = selectTag;
+
+// 主页小说卡片
+function novelCard(n) {
+
+    const tags = getTags(n);
+
+    const chapterCount = (n.volumes || []).reduce(
+        (sum,v) => sum + v.chapters.length, 0
+    );
+
+    return `
+        <div class="tile">
+
+            ${coverHTML(n)}
+
+            <h3>${esc(n.name)}</h3>
+
+            <p>${esc(n.desc || '暂无简介')}</p>
+
+            <div class="tags">
+                ${tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}
+            </div>
+
+            <p>
+                ${n.volumes.length} 个篇章 ·
+                ${chapterCount} 个章节
+            </p>
+
+            <div class="tile-actions">
+
+                <button class="btn primary"
+                    onclick="openNovel('${n.id}')">
+                    进入
+                </button>
+
+                <button class="btn"
+                    onclick="toggleNovelFavorite('${n.id}')">
+                    ${n.favorite ? '★ 已收藏' : '☆ 收藏'}
+                </button>
+
+                <button class="btn"
+                    onclick="editItem('novel','${n.id}')">
+                    编辑
+                </button>
+
+                <button class="btn danger"
+                    onclick="deleteItem('novel','${n.id}')">
+                    删除
+                </button>
+
+            </div>
+
+        </div>
+    `;
+}
+
+// 主界面
+function render() {
+
+    setCrumb();
+    renderFilters();
+
+    const content = el('content');
+
+    if (level === 'home' || level === 'favorites') {
+
+        const isFav = level === 'favorites';
+
+        el('heroTitle').textContent = isFav
+            ? '我的收藏'
+            : '把故事，收藏在自己的角落。';
+
+        el('heroDesc').textContent = isFav
+            ? '这里收藏着你喜欢的小说。'
+            : '建立小说、篇章与章节，慢慢整理属于你的文字世界。';
+
+        el('sectionTitle').textContent = isFav
+            ? '收藏的小说'
+            : '我的小说';
+
+        let novels = isFav
+            ? data.filter(n => n.favorite)
+            : data.filter(n =>
+                selectedTag === '全部' ||
+                getTags(n).includes(selectedTag)
+            );
+
+        if (isFav) {
+            el('filters').innerHTML = '';
+        }
+
+        if (searchTerm && level === 'home') {
+            novels = novels.filter(n =>
+                n.name.toLowerCase().includes(searchTerm) ||
+                (n.desc || '').toLowerCase().includes(searchTerm) ||
+                getTags(n).join(' ').toLowerCase().includes(searchTerm)
+            );
+        }
+
+        el('count').textContent = `${novels.length} 部小说`;
+
+        content.innerHTML = novels.length
+            ? `<div class="grid">
+                ${novels.map(novelCard).join('')}
+            </div>`
+            : `<div class="empty">
+                ${isFav ? '还没有收藏的小说。' : '这里还没有小说。'}
+                <br>点击右上角「新建小说」开始建立你的私人书架。
+            </div>`;
+
+    } else if (level === 'novel') {
+
+        const n = currentNovel();
+
+        if (!n) return goHome();
+
+        el('heroTitle').textContent = n.name;
+        el('heroDesc').textContent = n.desc || '这部小说还没有简介。';
+
+        el('sectionTitle').textContent = '篇章';
+        el('count').textContent = `${n.volumes.length} 个篇章`;
+
+        content.innerHTML = n.volumes.length
+            ? `<div class="list">
+                ${n.volumes.map((v,i) => `
+                    <div class="list-row">
+
+                        <span class="num">${i+1}</span>
+
+                        <div class="row-main">
+                            <h3>${esc(v.name)}</h3>
+                            <p>${v.chapters.length} 个章节</p>
+                        </div>
+
+                        <button class="btn primary"
+                            onclick="openVolume('${v.id}')">
+                            查看章节
+                        </button>
+
+                        <div class="row-actions">
+                            <button class="btn"
+                                onclick="editItem('volume','${v.id}')">
+                                编辑
+                            </button>
+
+                            <button class="btn danger"
+                                onclick="deleteItem('volume','${v.id}')">
+                                删除
+                            </button>
+                        </div>
+
+                    </div>
+                `).join('')}
+            </div>`
+            : `<div class="empty">
+                这部小说还没有篇章。
+            </div>`;
+
+    } else if (level === 'volume') {
+
+        const v = currentVolume();
+
+        if (!v) return goHome();
+
+        el('heroTitle').textContent = v.name;
+        el('heroDesc').textContent = `所属小说：${currentNovel().name}`;
+
+        el('sectionTitle').textContent = '章节';
+        el('count').textContent = `${v.chapters.length} 个章节`;
+
+        content.innerHTML = v.chapters.length
+            ? `<div class="list">
+                ${v.chapters.map((c,i) => `
+                    <div class="list-row">
+
+                        <span class="num">${i+1}</span>
+
+                        <div class="row-main">
+                            <h3>${esc(c.name)}</h3>
+                            <p>${esc((c.body || '').slice(0,90))}</p>
+                        </div>
+
+                        <button class="btn primary"
+                            onclick="readChapter('${c.id}')">
+                            阅读
+                        </button>
+
+                        <div class="row-actions">
+                            <button class="btn"
+                                onclick="editItem('chapter','${c.id}')">
+                                编辑
+                            </button>
+
+                            <button class="btn danger"
+                                onclick="deleteItem('chapter','${c.id}')">
+                                删除
+                            </button>
+                        </div>
+
+                    </div>
+                `).join('')}
+            </div>`
+            : `<div class="empty">
+                这个篇章还没有章节。
+            </div>`;
+
+    } else if (level === 'reader') {
+
+        const chapters = currentVolume()?.chapters || [];
+
+        const idx = chapters.findIndex(c => c.id === chapterId);
+
+        const c = chapters[idx];
+
+        if (!c) return goHome();
+
+        el('heroTitle').textContent = currentNovel().name;
+        el('heroDesc').textContent = currentVolume().name;
+
+        el('sectionTitle').textContent = '正在阅读';
+        el('count').textContent = '';
+
+        content.innerHTML = `
+            <article class="reader" id="readerCard">
+
+                <div class="reader-tools">
+
+                    <button class="btn" onclick="changeFont(-1)">
+                        A−
+                    </button>
+
+                    <button class="btn" onclick="changeFont(1)">
+                        A＋
+                    </button>
+
+                    <button class="btn" onclick="toggleReaderTheme()">
+                        阅读背景
+                    </button>
+
+                </div>
+
+                <h1>${esc(c.name)}</h1>
+
+                <div class="meta">
+                    ${esc(currentNovel().name)}
+                    · ${esc(currentVolume().name)}
+                </div>
+
+                <div class="body" id="readerBody">
+                    ${esc(c.body || '（本章暂无正文）')}
+                </div>
+
+                <div class="reader-nav">
+
+                    <button class="btn"
+                        ${idx <= 0 ? 'disabled' : ''}
+                        onclick="readChapter('${chapters[idx-1]?.id || ''}')">
+                        ← 上一章
+                    </button>
+
+                    <button class="btn"
+                        onclick="editItem('chapter','${c.id}')">
+                        编辑正文
+                    </button>
+
+                    <button class="btn"
+                        ${idx >= chapters.length-1 ? 'disabled' : ''}
+                        onclick="readChapter('${chapters[idx+1]?.id || ''}')">
+                        下一章 →
+                    </button>
+
+                </div>
+
+            </article>
+        `;
+
+        applyReaderTheme();
+        applyFont();
+
+    } else if (level === 'search') {
+
+        el('heroTitle').textContent = '搜索结果';
+        el('heroDesc').textContent = `关键词：${esc(searchTerm)}`;
+
+        el('sectionTitle').textContent = '匹配结果';
+
+        const results = [];
+
+        data.forEach(n => {
+
+            if (
+                n.name.toLowerCase().includes(searchTerm) ||
+                (n.desc || '').toLowerCase().includes(searchTerm) ||
+                getTags(n).join(' ').toLowerCase().includes(searchTerm)
+            ) {
+                results.push({
+                    type:'novel',
+                    novel:n,
+                    name:n.name
+                });
+            }
+
+            n.volumes.forEach(v => {
+
+                if (v.name.toLowerCase().includes(searchTerm)) {
+                    results.push({
+                        type:'volume',
+                        novel:n,
+                        volume:v,
+                        name:v.name
+                    });
+                }
+
+                v.chapters.forEach(c => {
+
+                    if (
+                        c.name.toLowerCase().includes(searchTerm) ||
+                        (c.body || '').toLowerCase().includes(searchTerm)
+                    ) {
+                        results.push({
+                            type:'chapter',
+                            novel:n,
+                            volume:v,
+                            chapter:c,
+                            name:c.name
+                        });
+                    }
+                });
+            });
+        });
+
+        el('count').textContent = `${results.length} 条结果`;
+
+        content.innerHTML = results.length
+            ? `<div class="list">
+                ${results.map((r,i) => `
+                    <div class="list-row">
+
+                        <span class="num">${i+1}</span>
+
+                        <div class="row-main">
+                            <h3>${esc(r.name)}</h3>
+                            <p>
+                                ${esc(r.novel.name)}
+                                ${r.volume ? ' · '+esc(r.volume.name) : ''}
+                                · ${r.type === 'chapter' ? '章节' : r.type === 'volume' ? '篇章' : '小说'}
+                            </p>
+                        </div>
+
+                        <button class="btn primary"
+                            onclick="openSearchResult(
+                                '${r.novel.id}',
+                                '${r.volume?.id || ''}',
+                                '${r.chapter?.id || ''}',
+                                '${r.type}'
+                            )">
+                            打开
+                        </button>
+
+                    </div>
+                `).join('')}
+            </div>`
+            : `<div class="empty">没有找到相关内容。</div>`;
+    }
+}
+
+function openNovel(id) {
+    novelId = id;
+    level = 'novel';
+    render();
+}
+
+function openVolume(id) {
+    volumeId = id;
+    level = 'volume';
+    render();
+}
+
+function readChapter(id) {
+    if (!id) return;
+
+    chapterId = id;
+    level = 'reader';
+
+    render();
+    window.scrollTo(0,0);
+}
+
+function openSearchResult(nid,vid,cid,type) {
+
+    novelId = nid;
+
+    if (type === 'novel') {
+        level = 'novel';
+    } else if (type === 'volume') {
+        volumeId = vid;
+        level = 'volume';
+    } else {
+        volumeId = vid;
+        chapterId = cid;
+        level = 'reader';
+    }
+
+    render();
+}
+
+function changeFont(delta) {
+
+    readerFont = Math.max(
+        13,
+        Math.min(30, readerFont + delta)
+    );
+
+    applyFont();
+}
+
+function applyFont() {
+    const body = el('readerBody');
+
+    if (body) {
+        body.style.fontSize = readerFont + 'px';
+    }
+}
+
+function toggleReaderTheme() {
+
+    readerTheme =
+        readerTheme === 'light' ? 'dark' :
+        readerTheme === 'dark' ? 'sepia' :
+        'light';
+
+    applyReaderTheme();
+}
+
+function applyReaderTheme() {
+
+    const r = el('readerCard');
+
+    if (!r) return;
+
+    const themes = {
+        light:['#fffdf9','#302b27'],
+        dark:['#242321','#e8e1d8'],
+        sepia:['#f1e5cf','#514333']
+    };
+
+    r.style.background = themes[readerTheme][0];
+    r.style.color = themes[readerTheme][1];
+}
+
+// 新建和编辑
+function openEditor(type,itemId=null) {
+
+    editing = {type,itemId};
+
+    const obj = itemId ? findItem(type,itemId) : null;
+
+    el('modalTitle').textContent =
+        (itemId ? '编辑' : '新建') +
+        ({novel:'小说',volume:'篇章',chapter:'章节'}[type]);
+
+    el('nameInput').value = obj?.name || '';
+    el('descInput').value = obj?.desc || '';
+    el('tagInput').value = getTags(obj || {}).join(', ');
+    el('coverInput').value = obj?.cover || '';
+    el('bodyInput').value = obj?.body || '';
+
+    el('descField').style.display =
+        type === 'novel' ? 'block' : 'none';
+
+    el('tagField').style.display =
+        type === 'novel' ? 'block' : 'none';
+
+    el('coverField').style.display =
+        type === 'novel' ? 'block' : 'none';
+
+    el('bodyField').style.display =
+        type === 'chapter' ? 'block' : 'none';
+
+    el('modalBack').classList.add('show');
+
+    el('nameInput').focus();
+}
+
+function findItem(type,id) {
+
+    if (type === 'novel') {
+        return data.find(n => n.id === id);
+    }
+
+    if (type === 'volume') {
+        return currentNovel()?.volumes.find(v => v.id === id);
+    }
+
+    return currentVolume()?.chapters.find(c => c.id === id);
+}
+
+window.editItem = openEditor;
+
+el('addBtn').onclick = () => {
+
+    const type =
+        level === 'home' || level === 'favorites' ? 'novel' :
+        level === 'novel' ? 'volume' :
+        level === 'volume' ? 'chapter' :
+        'novel';
+
+    openEditor(type);
+};
+
+el('cancelBtn').onclick = () => {
+    el('modalBack').classList.remove('show');
+};
+
+el('modalBack').addEventListener('click',e => {
+    if (e.target === el('modalBack')) {
+        el('modalBack').classList.remove('show');
+    }
+});
+
+el('editForm').onsubmit = e => {
+
+    e.preventDefault();
+
+    const {type,itemId} = editing;
+
+    const name = el('nameInput').value.trim();
+
+    if (!name) return;
+
+    const values = {
+        id:itemId || uid(),
+        name,
+        desc:el('descInput').value.trim(),
+        body:el('bodyInput').value,
+        tags:el('tagInput').value
+            .split(/[,，]/)
+            .map(t => t.trim())
+            .filter(Boolean),
+        cover:el('coverInput').value.trim()
+    };
+
+    if (type === 'novel') {
+
+        if (itemId) {
+            Object.assign(findItem(type,itemId),values);
+        } else {
+            data.push({
+                ...values,
+                favorite:false,
+                volumes:[]
+            });
+        }
+    }
+
+    if (type === 'volume') {
+
+        const n = currentNovel();
+
+        if (itemId) {
+            Object.assign(findItem(type,itemId),values);
+        } else {
+            n.volumes.push({
+                id:values.id,
+                name:values.name,
+                chapters:[]
+            });
+        }
+    }
+
+    if (type === 'chapter') {
+
+        const v = currentVolume();
+
+        if (itemId) {
+            Object.assign(findItem(type,itemId),values);
+        } else {
+            v.chapters.push({
+                id:values.id,
+                name:values.name,
+                body:values.body
+            });
+        }
+    }
+
+    save();
+
+    el('modalBack').classList.remove('show');
+
+    render();
+};
+
+// 删除
+function deleteItem(type,id) {
+
+    if (!confirm('确定删除这个项目及其下属内容吗？此操作无法撤销。')) {
+        return;
+    }
+
+    if (type === 'novel') {
+        data = data.filter(n => n.id !== id);
+    }
+
+    if (type === 'volume') {
+        currentNovel().volumes =
+            currentNovel().volumes.filter(v => v.id !== id);
+    }
+
+    if (type === 'chapter') {
+        currentVolume().chapters =
+            currentVolume().chapters.filter(c => c.id !== id);
+    }
+
+    save();
+    render();
+}
+
+window.deleteItem = deleteItem;
+window.openSearchResult = openSearchResult;
+window.toggleNovelFavorite = toggleNovelFavorite;
+
+// 搜索
+function runSearch() {
+
+    const q = el('searchInput').value.trim().toLowerCase();
+
+    if (!q) {
+        searchTerm = '';
+        level = 'home';
+        render();
+        return;
+    }
+
+    searchTerm = q;
+    level = 'search';
+
+    render();
+}
+
+el('searchBtn').onclick = runSearch;
+
+el('searchInput').addEventListener('keydown',e => {
+    if (e.key === 'Enter') runSearch();
+});
+
+// 收藏小说
+el('favoriteBtn').onclick = () => {
+
+    level = 'favorites';
+
+    searchTerm = '';
+
+    render();
+};
+
+// 导出
+el('exportBtn').onclick = () => {
+
+    const blob = new Blob(
+        [JSON.stringify(data,null,2)],
+        {type:'application/json'}
+    );
+
+    const a = document.createElement('a');
+
+    a.href = URL.createObjectURL(blob);
+    a.download = '私人小说馆备份.json';
+
+    a.click();
+
+    URL.revokeObjectURL(a.href);
+};
+
+// 导入
+el('importBtn').onclick = () => {
+    el('importFile').click();
+};
+
+el('importFile').onchange = async e => {
+
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    try {
+
+        const parsed = JSON.parse(await file.text());
+
+        if (!Array.isArray(parsed)) throw Error();
+
+        if (confirm('导入会替换目前的小说资料，确定继续吗？')) {
+
+            data = parsed;
+
+            save();
+
+            goHome();
+        }
+
+    } catch(err) {
+        alert('文件格式不正确，无法导入。');
+    }
+
+    e.target.value = '';
+};
+
+render();
+
+</script>
+
+</body>
+</html>
